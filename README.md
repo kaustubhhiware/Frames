@@ -7,7 +7,8 @@ Only valid formats allowed are : ".png",".jpg",".jpeg",".gif",".bmp",".PNG",".JP
 HOW TO START THIS PROJECT:
 Initially , try to run PictureGallery.jar .In ubuntu , you might have to write this in terminal
 cd <location>
-sudo chmod a+x CourseHandler.jar
+sudo chmod a+x PictureGallery.jar
+java -jar PictureGallery.jar
 If none of this works , start it in the default way by running in Eclipse/NetBeans
 
 >>Gallery.java is the main file.The name are displayed in a list so that the user may be able to delete an image.
