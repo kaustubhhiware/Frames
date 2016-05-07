@@ -153,43 +153,171 @@ public class Gallery implements Serializable{
 			{
 				int found = 0;
 				 String path = " ";
-				/*
+				
+				//Allowing max size to be flexible
+				/* 
 				if(album.size()==10)
 				{
 					JOptionPane.showMessageDialog(null, "Only 10 photos can be saved at a time !");
 				}
+
 				else
-				{ 
-                                 */   
-					 final JFileChooser  fileDialog = new JFileChooser();
-						int returnVal = fileDialog.showOpenDialog(frame);
+				{    
+				*/	 final JFileChooser  fileDialog = new JFileChooser();
+					int returnVal = fileDialog.showOpenDialog(frame);
 
-				        if (returnVal == JFileChooser.APPROVE_OPTION)
-				        {
+				    if (returnVal == JFileChooser.APPROVE_OPTION)
+				    {
 				    		
-				            String filename=fileDialog.getSelectedFile().getName();
-				           java.io.File file = fileDialog.getSelectedFile();
+				        String filename=fileDialog.getSelectedFile().getName();
+				       java.io.File file = fileDialog.getSelectedFile();
 				           
-				            path=fileDialog.getSelectedFile().getAbsolutePath();
-				          // String extension = file.getFileExtension(path);
+				        path=fileDialog.getSelectedFile().getAbsolutePath();
+				        // String extension = file.getFileExtension(path);
 				           
-				           String validate = filename.substring(filename.lastIndexOf("."),filename.length());
-
-				    	   //JOptionPane.showMessageDialog(null,"Path = "+path);
+				        String validate = filename.substring(filename.lastIndexOf("."),filename.length());
+    		    	    //JOptionPane.showMessageDialog(null,"Path = "+path);
 
 				    	   
-				           String[] validTypes = {".png",".jpg",".jpeg",".gif",".bmp"
-				        		   ,".PNG",".JPG",".JPEG",".GIF",".BMP"};//allowed photo types
-				           int possible_size = validTypes.length;
+				        String[] validTypes = {".png",".jpg",".jpeg",".gif",".bmp"
+				        ,".PNG",".JPG",".JPEG",".GIF",".BMP"};//allowed photo types
+				        int possible_size = validTypes.length;
 				          
-				           for(int i = 0; i < possible_size ; i++)
+				        for(int i = 0; i < possible_size ; i++)
+				        {
+				           if(validate.equals(validTypes[i]))
 				           {
-				        	   if(validate.equals(validTypes[i]))
-				        	   {
-				        		   found = 1;
-				        		   break;
-				        	   }
+				        	   found = 1;
+				        	   break;
 				           }
-				           if(found==1)
-				           {
-				        	   JOptionPane.showMessageDialog(null,"Image selected
+				        }
+				        if(found==1)
+				        {
+				           JOptionPane.showMessageDialog(null,"Image selected!");
+				          //JOptionPane.showMessageDialog(null,"Path = "+path);
+				        }
+				        else
+				        {	found = 0;
+				           JOptionPane.showMessageDialog(null,"Chosen file is not an image!");
+				        }
+				    }
+				    else
+				    {
+				      	found = 0;
+						JOptionPane.showMessageDialog(null,"No image selected !");
+			        }  
+				        
+			        if(found==1)
+			        {	String title = "qwertyuiopasdfghjklzxcvbnm";
+				       
+			        	title = JOptionPane.showInputDialog("Enter Title ");
+			        	while(title.length()>20||title.equals(""))
+			        	{
+			        		title = JOptionPane.showInputDialog("Enter Title upto 20 characters");
+			        	
+			        	}
+			        	//JOptionPane.showMessageDialog(null, "{"+title+"}");
+				        	
+			        	String annotation = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm";
+			        	//had to use long string as RandomUtilString unable to import
+				        	
+			        	annotation = JOptionPane.showInputDialog("Enter Annotation ");
+
+			        	while(annotation.length()>100||annotation.equals(""))
+			        	{
+			        		annotation = JOptionPane.showInputDialog("Enter Annotation upto 100 characters");
+			        	}
+				        
+			    		Photo newPhoto = new Photo();
+
+
+						newPhoto.setImage(path);
+						newPhoto.setTitle(title);
+						newPhoto.setAnnotation(annotation);
+							
+						album.add(newPhoto);
+						ReadData r = new ReadData(album,filename);
+						//frame.getContentPane().revalidate();
+						//frame.getContentPane().repaint();
+						frame.dispose();
+						Gallery g = new Gallery();
+			        }
+				//}
+			}
+		});
+		btnAdd.setBounds(10, 250, 100, 50);
+		frame.getContentPane().add(btnAdd);
+		
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				int remove = table.getSelectedRow();
+				if(remove==-1)
+				{
+					JOptionPane.showMessageDialog(null, "Select an image first");
+				}
+				else
+				{
+					Photo removed = album.remove(remove);
+				
+					ReadData r = new ReadData(album,filename);
+
+					JOptionPane.showMessageDialog(null,"Image " + removed.getTitle() + " has been removed");
+					//frame.getContentPane().revalidate();
+					//frame.getContentPane().repaint();
+					frame.dispose();
+					Gallery g2 = new Gallery();
+				}
+			}
+		});
+		btnDelete.setBounds(383, 250, 91, 50);
+		frame.getContentPane().add(btnDelete);
+		
+		JButton btnView = new JButton("View");
+		btnView.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				int check = table.getSelectedRow();
+				if(check==-1)
+				{
+					displayAll dA = new displayAll(album,filename,1,frame);//1 for images;
+				}
+				else
+				{
+					try {
+						viewImage vI = new viewImage(album,check,filename,1,frame);
+						frame.dispose();
+						//removing frame for exception handling
+						
+					} catch (IIOException e1) {
+					//	e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Image went missing !");
+						Photo remove = album.remove(check);
+						frame.dispose();
+						Gallery g = new Gallery();
+
+					}
+				}
+			}
+		});
+		btnView.setBounds(140, 250, 100, 50);
+		frame.getContentPane().add(btnView);
+		
+		JButton btnGallery = new JButton("Gallery !");
+		btnGallery.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				displayAll dA = new displayAll(album,filename,1,frame);
+				
+			}
+		});
+		btnGallery.setBounds(270, 250, 100, 50);
+		frame.getContentPane().add(btnGallery);
+		
+		frame.setVisible(true);
+	}
+}
